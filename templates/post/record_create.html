@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h4 class="my-3 border-bottom pb-2">Create Record</h4>
+  <form method="post" class="post-form my-3">
+    {% csrf_token %}
+    {% if form.errors %}
+      <div class="alert alert-danger" role="alert">
+        {% for field in form %}
+          {% if field.errors %}
+          <strong>{{ field.label }}</strong>
+          {{ field.errors }}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    <div class="form-group">
+        <label for="song_title">Song Title</label>
+        <input type="text" class="form-control" name="song_title" id="song_title"
+          value="{{ form.song_title.value|default_if_none:'' }}">
+    </div>
+    <div class="form-group">
+        <label for="song_intro">Detail Of Song</label>
+        <textarea class="form-control" name="song_intro"
+          id="song_intro" rows="10">{{ form.song_intro.value|default_if_none:'' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="song_file">Song File</label>
+      <input type="file" class="form-control" name="song_file" id="song_file"
+        value="{{ form.song_file.value|default_if_none:'' }}">
+    </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+{% endblock %}

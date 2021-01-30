@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="container">
+  <h1>MUSICHUB</h1>
+  <br>
+  <ul>
+    <div id="latest_music_list">
+      <div id="title_latest_music_list">
+        <h2>Latest Music</h2>
+      </div>
+        {% for record in latest_record_list %}
+          <div id="music_block">
+            <img src="../static/img/default.png">
+            <div id="music_explain">
+              <a href="{% url 'post:detail' record.id %}">{{ record.artist }}<br>{{ record.song_title }}</a>
+            </div>
+          </div>
+        {% endfor %}
+    </div>
+    <!--
+    <div id="add_record">
+      <br>
+      <h2>Add Record</h2>
+      <form action="{% url 'post:record_create' %}" method="post" class="my-3">
+        {% csrf_token %}
+        <div class="form-group">
+          <h4>Song Title</h4>
+          <textarea name="song_title" id="song_title" rows="1"></textarea>
+          <h4>Song Introduction</h4>
+          <textarea name="song_intro" id="song_intro" rows="10"></textarea>
+        </div>
+        <input type="submit" value="Submit" class="btn btn-primary">
+      </form>
+    </div>
+  -->
+  <div id="add_record">
+    <a href="{% url 'post:record_create' %}" class="btn btn-primary">Create Record</a>
+  </div>
+  </ul>
+  </div>
+{% endblock %}

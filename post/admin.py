@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import Record
+from .models import Record, Comment
 
-admin.site.register(Record)
+
+class RecordAdmin(admin.ModelAdmin):
+    search_fields = ['song_title']
+
+admin.site.register(Record, RecordAdmin)
 # Register your models here.
+admin.site.register(Comment)
