@@ -1,9 +1,13 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import Record, Comment
 from .forms import RecordForm, CommentForm
+from django.conf import settings
+import os
 
 def handle_uploaded_file(f, name):
-    with open(settings.MEDIA_URL+"/")
+    with open(settings.MEDIA_URL+"musics/"+name, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
 
 
 def index(request):
@@ -27,11 +31,14 @@ def detail(request, pk):
 
 def record_create(request):
     if request.method == 'POST':
-        form = RecordForm(request.POST)
+        form = RecordForm(request.POST, request.FILES)
         if form.is_valid():
             record = form.save(commit=False)#save just temporary
             record.artist = request.user
             record.save()
+            #name = record.song_file.name.split('/')[1]
+            #name = os.path.basename(record.song_file.name)
+            #handle_uploaded_file(request.FILES['song_file'], name)
             return redirect('post:index')
     else:
         form = RecordForm()

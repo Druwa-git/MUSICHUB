@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container">
   <h4 class="my-3 border-bottom pb-2">Create Record</h4>
-  <form method="post" class="post-form my-3">
+  <form method="post" class="post-form my-3" enctype="multipart/form-data">
     {% csrf_token %}
     {% if form.errors %}
       <div class="alert alert-danger" role="alert">
@@ -29,6 +29,7 @@
       <input type="file" class="form-control" name="song_file" id="song_file"
         value="{{ form.song_file.value|default_if_none:'' }}">
     </div>
+    <br>
   <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 </div>
