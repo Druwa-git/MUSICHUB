@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
+{% load post_filter %}
 {% block content %}
   <div class="container">
-  <h1>MUSICHUB</h1>
   <br>
   <ul>
     <div id="latest_music_list">
@@ -17,25 +17,80 @@
           </div>
         {% endfor %}
     </div>
-    <!--
-    <div id="add_record">
-      <br>
-      <h2>Add Record</h2>
-      <form action="{% url 'post:record_create' %}" method="post" class="my-3">
-        {% csrf_token %}
-        <div class="form-group">
-          <h4>Song Title</h4>
-          <textarea name="song_title" id="song_title" rows="1"></textarea>
-          <h4>Song Introduction</h4>
-          <textarea name="song_intro" id="song_intro" rows="10"></textarea>
-        </div>
-        <input type="submit" value="Submit" class="btn btn-primary">
-      </form>
+  </ul>
+  <ul>
+    <div id="all_record_list">
+      <h2>RECORD LIST</h2>
+      <div id="add_record">
+      <a href="{% url 'post:record_create' %}" class="btn btn-primary" >Create Record</a>
+      </div>
     </div>
-  -->
-  <div id="add_record">
-    <a href="{% url 'post:record_create' %}" class="btn btn-primary">Create Record</a>
-  </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Artist</th>
+          <th scope="col">Title</th>
+          <th scope="col">published date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in all_record_list %}
+        <tr>
+          <th scope="row">{{ all_record_list.paginator.count|sub:all_record_list.start_index|sub:forloop.counter0|add:1 }}</th>
+          <td><{{ record.artist }}</td>
+          <td>
+            <a href="{% url 'post:detail' record.id %}">{{ record.song_title }}</a>
+            {% if record.comments.count > 0 %}
+            <span class="text-danger small m1-2">{{ record.comments.count }}</span>
+            {% endif %}
+          </td>
+          <td>{{ record.published_date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </ul>
+  <ul class="pagination justify-content-center">
+    {% if all_record_list.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ question_list.previous_page_number }}">
+        이전
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" tabindex="-1" aria-disabled="true" href="#">
+        이전
+      </a>
+    </li>
+    {% endif %}
+    {% for page_number in all_record_list.paginator.page_range %}
+    {% if page_number >= all_record_list.number|add:-5 and page_number <= all_record_list.number|add:5 %}
+      {% if page_number == all_record_list.number %}
+      <li class="page-item active" aria-current="page">
+          <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+      </li>
+      {% else %}
+      <li class="page-item">
+          <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+      </li>
+      {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% if all_record_list.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ question_list.next_page_number }}">
+        다음
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" tabindex="-1" aria-disabled="true" href="#">
+        다음
+      </a>
+    </li>
+    {% endif %}
   </ul>
   </div>
 {% endblock %}

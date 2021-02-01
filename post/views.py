@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from .models import Record, Comment
 from .forms import RecordForm, CommentForm
 from django.conf import settings
+from django.core.paginator import Paginator
 import os
 
 def handle_uploaded_file(f, name):
@@ -11,8 +12,15 @@ def handle_uploaded_file(f, name):
 
 
 def index(request):
-    latest_record_list = Record.objects.order_by('-published_date')[:5]
-    context = {'latest_record_list':  latest_record_list}
+    page = request.GET.get('page', '1')
+    latest_record_list = Record.objects.order_by('-published_date')[:3]
+    all_record_list = Record.objects.order_by('-published_date')
+    paginator = Paginator(all_record_list, 10)
+    page_obj = paginator.get_page(page)
+    context = {
+        'latest_record_list':  latest_record_list,
+        'all_record_list': page_obj
+    }
     return render(request, 'post/index.html', context)
 
 # Create your views here.
