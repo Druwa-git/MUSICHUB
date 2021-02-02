@@ -10,7 +10,7 @@
       </div>
         {% for record in latest_record_list %}
           <div id="music_block">
-            <img src="../static/img/default.png">
+            <img src="{{ record.song_image.url }}">
             <div id="music_explain">
               <a href="{% url 'post:detail' record.id %}">{{ record.artist }}<br>{{ record.song_title }}</a>
             </div>
@@ -19,10 +19,12 @@
     </div>
   </ul>
   <ul>
-    <div id="all_record_list">
-      <h2>RECORD LIST</h2>
-      <div id="add_record">
-      <a href="{% url 'post:record_create' %}" class="btn btn-primary" >Create Record</a>
+    <div class="row">
+      <div class="col-4">
+        <h2>RECORD LIST</h2>
+      </div>
+      <div class="col-8 text-right">
+        <a href="{% url 'post:record_create' %}" class="btn btn-primary" >Create Record</a>
       </div>
     </div>
     <table class="table">

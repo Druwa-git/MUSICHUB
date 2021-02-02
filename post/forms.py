@@ -4,7 +4,7 @@ from post.models import Record, Comment
 class RecordForm(forms.ModelForm):
     class Meta:
         model = Record
-        fields = ['song_title', 'song_intro', 'song_file']
+        fields = ['song_title', 'song_intro', 'song_file', 'song_image']
 
         '''
         widgets = {
@@ -17,6 +17,7 @@ class RecordForm(forms.ModelForm):
             'song_title': 'Song Title',
             'song_intro': 'Detail Of Song',
             'song_file': 'Song File',
+            'song_image': 'Song Image',
         }
 
 class CommentForm(forms.ModelForm):
