@@ -8,6 +8,7 @@ class Record(models.Model):
     song_file = models.FileField(upload_to='musics/', blank=True, null=True, default='')
     song_image = models.FileField(upload_to='images/', blank=True, default='images/default.png')
     published_date = models.DateTimeField(auto_now_add=True)
+    edited_date = models.DateTimeField(auto_now=True, blank=True, null=True)
     def __str__(self):
         return self.song_title
 
@@ -19,3 +20,4 @@ class Comment(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
+    edited_date = models.DateTimeField(auto_now=True, blank=True, null=True)

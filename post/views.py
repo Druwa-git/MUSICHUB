@@ -3,6 +3,7 @@ from .models import Record, Comment
 from .forms import RecordForm, CommentForm
 from django.conf import settings
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 import os
 
 def handle_uploaded_file(f, name):
@@ -28,6 +29,7 @@ def index(request):
 def get_object(request, pk):
     return get_object_or_404(Record, pk=pk)
 
+@login_required(login_url='common:login')
 def detail(request, pk):
     record = get_object(request, pk=pk)
     latest_comment_list = Comment.objects.filter(record=pk).order_by('-published_date')
@@ -37,6 +39,7 @@ def detail(request, pk):
     }
     return render(request, 'post/detail.html', context)
 
+@login_required(login_url='common:login')
 def record_create(request):
     if request.method == 'POST':
         form = RecordForm(request.POST, request.FILES)
@@ -54,6 +57,8 @@ def record_create(request):
     form = {'form': form }
     return render(request, 'post/record_create.html', form)
 
+
+@login_required(login_url='common:login')
 def comment_create(request, pk):
     record = get_object(request, pk=pk)
     #record.comments.create(author=request.user, content=request.POST.get('content'))

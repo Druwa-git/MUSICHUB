@@ -40,7 +40,9 @@
         {% for record in all_record_list %}
         <tr>
           <th scope="row">{{ all_record_list.paginator.count|sub:all_record_list.start_index|sub:forloop.counter0|add:1 }}</th>
-          <td><{{ record.artist }}</td>
+          <td>
+            {{ record.artist }}
+          </td>
           <td>
             <a href="{% url 'post:detail' record.id %}">{{ record.song_title }}</a>
             {% if record.comments.count > 0 %}
