@@ -2,7 +2,19 @@
 {% block content %}
   <div class="container my-3">
     <div>
-      <h2 class="border-bottom py-2">{{ record.song_title }}</h2>
+      <div class="row">
+          <div class="col-10">
+            <h2 class="border-bottom py-2">{{ record.song_title }}</h2>
+          </div>
+          {% if request.user == record.artist %}
+          <span>
+              <a href="{% url 'post:record_modify' record.id %}"
+                class="btn btn-sm btn-outline-secondary">Edit</a>
+              <a href="#" class="delete btn btn-sm btn-outline-secondary"
+                data-uri="{% url 'post:record_remove' record.id %}">Remove</a>
+          </span>
+          {% endif %}
+      </div>
       <div class="card my-3">
         <div class="card-body">
           {{ record.artist }}
@@ -19,9 +31,16 @@
           {% endif %}
           <div class="d-flex justify-content-end">
             <div class="badge badge-light p-2">
-              {{ record.published_date }}
+              작성일 : {{ record.published_date }}
             </div>
           </div>
+          {% if record.edited_date %}
+          <div class="d-flex justify-content-end">
+            <div class="badge badge-light p-2">
+              수정일 : {{ record.edited_date }}
+            </div>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -49,16 +68,43 @@
     <div class="card my-3">
       <div class="card-body">
         {{ comment.author }}
+        {% if request.user == comment.author %}
+        <span>
+            <a href="{% url 'post:comment_modify' record.id comment.id %}"
+              class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a href="#" class="delete btn btn-sm btn-outline-secondary"
+              data-uri="{% url 'post:comment_remove' record.id comment.id %}">Remove</a>
+        </span>
+        {% endif %}
         <div class="card-text" style="white-space: pre-line;">
           {{ comment.content }}
         </div>
         <div class="d-flex justify-content-end">
           <div class="badge badge-light p-2">
-            {{ comment.published_date }}
+            작성일 : {{ comment.published_date }}
           </div>
         </div>
+        {% if comment.edited_date %}
+        <div class="d-flex justify-content-end">
+          <div class="badge badge-light p-2">
+            수정일 : {{ comment.edited_date }}
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
     {% endfor %}
   </div>
+{% endblock %}
+
+{% block script %}
+<script type='text/javascript'>
+  $(document).ready(function(){
+      $(".delete").on('click', function() {
+          if(confirm("정말로 삭제하시겠습니까?")) {
+              location.href = $(this).data('uri');
+          }
+      });
+  });
+</script>
 {% endblock %}

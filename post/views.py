@@ -4,6 +4,7 @@ from .forms import RecordForm, CommentForm
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 import os
 
 def handle_uploaded_file(f, name):
@@ -28,6 +29,9 @@ def index(request):
 
 def get_object(request, pk):
     return get_object_or_404(Record, pk=pk)
+
+def get_comment(request, pk):
+    return get_object_or_404(Comment, pk=pk)
 
 @login_required(login_url='common:login')
 def detail(request, pk):
@@ -57,6 +61,33 @@ def record_create(request):
     form = {'form': form }
     return render(request, 'post/record_create.html', form)
 
+@login_required(login_url='common:login')
+def record_modify(request, pk):
+    record = get_object(request, pk=pk)
+    if request.user != record.artist:
+        messages.error(request, '수정권한이 없습니다')
+        return redirect('post:detail', pk=pk)
+
+    if request.method == 'POST':
+        form = RecordForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            record = form.save(commit=False)#save just temporary
+            record.artist = request.user
+            record.save()
+            return redirect('post:detail', pk=pk)
+    else:
+        form = RecordForm(instance=record)
+    form = {'form': form}
+    return render(request, 'post/record_create.html', form)
+
+@login_required(login_url='common:login')
+def record_remove(request, pk):
+    record = get_object(request, pk=pk)
+    if request.user != record.artist:
+        messages.error(request, '삭제권한이 없습니다')
+        return redirect('post:detail', pk=pk)
+    record.delete()
+    return redirect('post:index')
 
 @login_required(login_url='common:login')
 def comment_create(request, pk):
@@ -75,3 +106,34 @@ def comment_create(request, pk):
     #Record.objects.create(artist=request.user, song_title=request.POST.get('song_title'),  song_intro=request.POST.get('song_intro'))
     form = {'record': record, 'form': form }
     return render(request, 'post/detail.html', form)
+
+@login_required(login_url='common:login')
+def comment_modify(request, record_pk, comment_pk):
+    record = get_object(request, pk=record_pk)
+    comment = get_comment(request, pk=comment_pk)
+    if request.user != comment.author:
+        messages.error(request, '수정권한이 없습니다')
+        return redirect('post:detail', pk=record_pk)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            comment = form.save(commit=False)#save just temporary
+            comment.author = request.user
+            comment.record = record
+            comment.save()
+            return redirect('post:detail', pk=record_pk)
+    else:
+        form = CommentForm(instance=comment)
+    form = {'record': record, 'form': form}
+    return render(request, 'post/comment_edit.html', form)
+
+@login_required(login_url='common:login')
+def comment_remove(request, record_pk, comment_pk):
+    record = get_object(request, pk=record_pk)
+    comment = get_comment(request, pk=comment_pk)
+    if request.user != comment.author:
+        messages.error(request, '삭제권한이 없습니다')
+        return redirect('post:detail', pk=record_pk)
+    comment.delete()
+    return redirect('post:detail', pk=record_pk)
