@@ -18,9 +18,9 @@ from django.urls import path, include
 #for MEDIA File
 from django.conf import settings
 from django.conf.urls.static import static
-from post import views
+from post.views import base_views
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', base_views.index, name='index'),
     path('admin/', admin.site.urls),
     path('post/', include('post.urls')),
     path('common/', include('common.urls')),
