@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
+{% load post_filter %}
 {% block content %}
   <div class="container my-3">
+    {% if messages %}
+    <div class="alert alert-danger my-3" role="alert">
+    {% for message in messages %}
+      <strong>{{ message.tag }}</strong>
+      <ul><li>{{ message.message }}</li></ul>
+    {% endfor %}
+    </div>
+    {% endif %}
     <div>
       <div class="row">
           <div class="col-10">
@@ -15,32 +24,47 @@
           </span>
           {% endif %}
       </div>
-      <div class="card my-3">
-        <div class="card-body">
-          {{ record.artist }}
-          <div class="card-text" style="white-space: pre-line;">
-            {{ record.song_intro }}
-          </div>
-          {% if record.song_file %}
-          <div class>
-            <audio controls>
-              <source src="{{record.song_file.url}}">
-                Your browser does not support the <code>audio</code> element.
-            </audio>
-          </div>
-          {% endif %}
-          <div class="d-flex justify-content-end">
-            <div class="badge badge-light p-2">
-              작성일 : {{ record.published_date }}
-            </div>
-          </div>
-          {% if record.edited_date %}
-          <div class="d-flex justify-content-end">
-            <div class="badge badge-light p-2">
-              수정일 : {{ record.edited_date }}
-            </div>
-          </div>
-          {% endif %}
+        <div class="card my-3">
+              <div class="card-body my-3">
+                {{ record.artist }}
+                <div class="card-text" style="white-space: pre-line;">
+                  {{ record.song_intro }}
+                </div>
+                {% if record.song_file %}
+                <div class>
+                  <audio controls>
+                    <source src="{{record.song_file.url}}">
+                      Your browser does not support the <code>audio</code> element.
+                  </audio>
+                </div>
+                {% endif %}
+                <div class="d-flex justify-content-end">
+                  <div class="badge badge-light p-2">
+                    작성일 : {{ record.published_date }}
+                  </div>
+                </div>
+                {% if record.edited_date %}
+                <div class="d-flex justify-content-end">
+                  <div class="badge badge-light p-2">
+                    수정일 : {{ record.edited_date }}
+                  </div>
+                </div>
+                {% endif %}
+              <div class="row my-3">
+                <div class="col d-flex justify-content-center">
+                <div class="col-2">
+                  <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
+                    {{ record.like.count }}</div>
+                  <a href="#" data-uri="{% url 'post:record_like' record.id %}"
+                    class="like btn btn-sm btn-secondary btn-block my-1">호감</a>
+                </div>
+                <div class="col-2">
+                  <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
+                    {{ record.dislike.count }}</div>
+                  <a href="#" data-uri="{% url 'post:record_dislike' record.id %}"
+                    class="like btn btn-sm btn-secondary btn-block my-1">비호감</a>
+                </div>
+              </div>
         </div>
       </div>
     </div>
@@ -67,17 +91,31 @@
     {% for comment in latest_comment_list %}
     <div class="card my-3">
       <div class="card-body">
-        {{ comment.author }}
-        {% if request.user == comment.author %}
-        <span>
-            <a href="{% url 'post:comment_modify' record.id comment.id %}"
-              class="btn btn-sm btn-outline-secondary">Edit</a>
-            <a href="#" class="delete btn btn-sm btn-outline-secondary"
-              data-uri="{% url 'post:comment_remove' record.id comment.id %}">Remove</a>
-        </span>
-        {% endif %}
-        <div class="card-text" style="white-space: pre-line;">
-          {{ comment.content }}
+        <div class="row my-3">
+          <div class="col-8">
+            {{ comment.author }}
+            {% if request.user == comment.author %}
+            <span>
+                <a href="{% url 'post:comment_modify' record.id comment.id %}"
+                  class="btn btn-sm btn-outline-secondary">Edit</a>
+                <a href="#" class="delete btn btn-sm btn-outline-secondary"
+                  data-uri="{% url 'post:comment_remove' record.id comment.id %}">Remove</a>
+            </span>
+            {% endif %}
+            <div class="card-text" style="white-space: pre-line;">
+              {{ comment.content }}
+            </div>
+          </div>
+          <div class="col-4">
+              <div class="bg-light text-center p-3 border font-weight-bolder mb-1">
+                {{ comment.like.count|sub:comment.dislike.count }}</div>
+              <div class="col d-flex justify-content-end">
+              <a href="#" data-uri="{% url 'post:comment_like' record.id comment.id %}"
+                class="like btn btn-sm btn-secondary btn-block my-1">UP</a>
+              <a href="#" data-uri="{% url 'post:comment_dislike' record.id comment.id %}"
+                class="like btn btn-sm btn-secondary btn-block my-1">DOWN</a>
+            </div>
+          </div>
         </div>
         <div class="d-flex justify-content-end">
           <div class="badge badge-light p-2">
@@ -95,6 +133,7 @@
     </div>
     {% endfor %}
   </div>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -104,6 +143,11 @@
           if(confirm("정말로 삭제하시겠습니까?")) {
               location.href = $(this).data('uri');
           }
+      });
+      $(".like").on('click', function() {
+        if(confirm("정말 누를까요?")) {
+          location.href = $(this).data('uri');
+        }
       });
   });
 </script>

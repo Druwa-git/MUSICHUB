@@ -53,3 +53,21 @@ def record_remove(request, pk):
         return redirect('post:detail', pk=pk)
     record.delete()
     return redirect('post:index')
+
+@login_required(login_url='common:login')
+def record_like(request, pk):
+    record = get_object(request, pk=pk)
+    if request.user == record.artist:
+        messages.error(request, '본인이 추천할 순 없어요~')
+    else:
+        record.like.add(request.user)
+    return redirect('post:detail', pk=pk)
+
+@login_required(login_url='common:login')
+def record_dislike(request, pk):
+    record = get_object(request, pk=pk)
+    if request.user == record.artist:
+        messages.error(request, '본인이 비추천할 순 없어요~')
+    else:
+        record.dislike.add(request.user)
+    return redirect('post:detail', pk=pk)

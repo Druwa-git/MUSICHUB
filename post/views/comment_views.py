@@ -55,3 +55,23 @@ def comment_remove(request, record_pk, comment_pk):
         return redirect('post:detail', pk=record_pk)
     comment.delete()
     return redirect('post:detail', pk=record_pk)
+
+@login_required(login_url='common:login')
+def comment_like(request, record_pk, comment_pk):
+    record = get_object(request, pk=record_pk)
+    comment =get_comment(request, pk=comment_pk)
+    if request.user == comment.author:
+        messages.error(request, '본인이 추천할 순 없어요~')
+    else:
+        comment.like.add(request.user)
+    return redirect('post:detail', pk=record_pk)
+
+@login_required(login_url='common:login')
+def comment_dislike(request, record_pk, comment_pk):
+    record = get_object(request, pk=record_pk)
+    comment =get_comment(request, pk=comment_pk)
+    if request.user == comment.author:
+        messages.error(request, '본인이 비추천할 순 없어요~')
+    else:
+        comment.dislike.add(request.user)
+    return redirect('post:detail', pk=record_pk)
